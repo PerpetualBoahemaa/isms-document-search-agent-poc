@@ -9,8 +9,7 @@ This project is a Proof of Concept (PoC) for a tool that automates the search fo
 ## 2. Demo
 
 ## 3. How It Works
-The workflow operates locally as a deterministic sequence of eight operational nodes running on every incoming user query:
-
+The workflow operates as a deterministic sequence of eight nodes that run after a user's query:
 ```text
 [Chat Trigger] ➔ [Fetch ISO 27002] ➔ [Search Evidence Folder] ➔ [Download Files]
                                                                         │
