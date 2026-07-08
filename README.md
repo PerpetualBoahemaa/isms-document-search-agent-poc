@@ -20,7 +20,7 @@ The workflow operates as a deterministic sequence of eight nodes that run after 
 [Chat Trigger] ➔ [Fetch ISO 27002] ➔ [Search Evidence Folder] ➔ [Download Files]
                                                                         │
 [Chat Interface] 🖙 [HTTP Request (Claude)] 🖘 [Code Node (JS)] 🖘 [Merge (Append)]
-
+```
 * **When chat message received:** The entry point. A built-in n8n Chat Trigger captures the user's query from the interface. It uses "Using Response Nodes" mode to defer the final response to the end of the pipeline.
 * **Fetch ISO 27001 Reference:** A Google Drive Download node that pulls the core ISO 27002:2022 standard text from a designated Reference folder. It exports it on the fly as plain text (`.txt`) via Google File Conversion, storing the binary data in a named field (`isoData`).
 * **Search Evidence Folder:** A Google Drive Search node that queries the target operational folder using advanced parameters (`[folder ID] in parents and trashed = false`) to identify all compliance evidence files.
