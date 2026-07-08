@@ -108,8 +108,12 @@ This pipeline operates on Retrieval-Augmented Generation (RAG) principles thus g
 * **Data Processing:** JavaScript (ECMAScript 6 within n8n Code node environment)
 * **Protocol Layer:** HTTPS 
 
+## 5. Limitations and Next Steps
+While effective for localized operations, this proof-of-concept pipeline scales under the following functional constraints: 
+* It passes full policy texts directly into the prompt context thus creating scaling bottlenecks as the document library grows
+* Its self-hosted architecture lacks the enterprise authorization boundaries required for secure and multi-department compliance operations. 
 
-
-
+### Data Sovereignty and Flow
+For this proof of concept, running n8n locally alongside a personal drive and the Anthropic API under its commercial terms provides a controlled and effectively “sovereign” data path. However, for production-scale deployment, a preferred approach would be to build or integrate the solution using Microsoft-native services, for document storage (and vector database functionalities) especially, to ensure enterprise-grade compliance and sovereign data tenancy. Future iterations will pivot toward a vectorized Retrieval-Augmented Generation (RAG) database architecture with sovereign data tenancy, prompt caching, and localized secure hosting to support enterprise-grade deployment scopes.
 
 
