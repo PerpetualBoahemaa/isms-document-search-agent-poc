@@ -19,7 +19,7 @@ The workflow operates as a deterministic sequence of eight nodes that run after 
 
 ![Screenshot of automated workflow on n8n platform](images/workflow.png)
 
-* **When chat message received:** A built-in n8n Chat Trigger captures the user's query from the interface. It uses "Using Response Nodes" mode to defer the final response to the end of the pipeline.
+* **When chat message received:** A built-in n8n Chat Trigger captures the user's query from the interface. It uses "Using Response Nodes" mode to defer the final response to the end of the pipeline. An example is captured below:
   
 ![Screenshot of user query](images/chat-trigger.png)
 
@@ -92,7 +92,7 @@ GUARDRAILS
 - Separate each control finding with a blank line. Never run findings together in a single paragraph block.
 ```
 
-* **Chat (Send Message):** It extracts the raw text response from Claude's response path (`content[0].text`) and renders it cleanly back to the chat UI.
+* **Chat (Send Message):** It extracts the raw text response from Claude's response path (`content[0].text`) and renders it cleanly back to the chat UI, as seen below:
 ---
 
 ![Screenshot of user query](images/reply-1.png)
