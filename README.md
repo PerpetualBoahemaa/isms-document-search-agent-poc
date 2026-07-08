@@ -17,7 +17,7 @@ Note: The video demonstrates a full 93-ISO-control scan. The entire automated se
 ## 3. How It Works
 The workflow operates as a deterministic sequence of eight nodes that run after a user's query:
 
-![Screenshot of automated workflow on n8n platform] (images/workflow.png)
+![Screenshot of automated workflow on n8n platform](images/workflow.png)
 
 ```
 [Chat Trigger] ➔ [Fetch ISO 27002] ➔ [Search Evidence Folder] ➔ [Download Files]
