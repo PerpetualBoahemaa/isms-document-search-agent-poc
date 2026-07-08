@@ -21,7 +21,7 @@ The workflow operates as a deterministic sequence of eight nodes that run after 
 
 * **When chat message received:** A built-in n8n Chat Trigger captures the user's query from the interface. It uses "Using Response Nodes" mode to defer the final response to the end of the pipeline.
   
-![Screenshot of user query](images/chat trigger.png)
+![Screenshot of user query](images/chat-trigger.png)
 
 * **Fetch ISO 27001 Reference:** A Google Drive Download node that pulls the core ISO 27001:2022 standard text from a designated Reference folder. It exports it as plain text (`.txt`) via Google File Conversion and then stores the binary data in a named field (`isoData`).
 * **Search Evidence Folder:** A Google Drive Search node that queries the target operational folder using advanced parameters (`[folder ID] in parents and trashed = false`) to identify all compliance evidence files.
@@ -95,9 +95,9 @@ GUARDRAILS
 * **Chat (Send Message):** It extracts the raw text response from Claude's response path (`content[0].text`) and renders it cleanly back to the chat UI.
 ---
 
-![Screenshot of user query](images/Reply(1).png)
-![Screenshot of user query](images/Reply(2).png)
-![Screenshot of user query](images/Reply(3).png)
+![Screenshot of user query](images/reply-1.png)
+![Screenshot of user query](images/reply-2.png)
+![Screenshot of user query](images/reply-3.png)
 
 This pipeline operates on Retrieval-Augmented Generation (RAG) principles thus grounding model outputs in verifed source documentation.
 
