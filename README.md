@@ -114,6 +114,7 @@ While effective for localized operations, this proof-of-concept pipeline scales 
 * Its self-hosted architecture lacks the enterprise authorization boundaries required for secure and multi-department compliance operations. 
 
 ### Data Sovereignty and Flow
-For this proof of concept, running n8n locally alongside a personal drive and the Anthropic API under its commercial terms provides a controlled and effectively “sovereign” data path. However, for production-scale deployment, a preferred approach would be to build or integrate the solution using Microsoft-native services, for document storage (and vector database functionalities) especially, to ensure enterprise-grade compliance and sovereign data tenancy. Future iterations will pivot toward a vectorized Retrieval-Augmented Generation (RAG) database architecture with sovereign data tenancy, prompt caching, and localized secure hosting to support enterprise-grade deployment scopes.
+For this proof of concept, running n8n locally alongside a personal drive and the Anthropic API under its commercial terms provides a controlled and effectively “sovereign” data path. However, for production-scale deployment, a preferred approach would be to build or integrate the solution using Microsoft-native services, for document storage (and vector database functionalities) especially, to ensure enterprise-grade compliance and sovereign data tenancy. Future iterations will pivot towards a vectorized database with compliant data tenancy as well as prompt caching and a query/response interface accessible to all team members.
+
 
 
