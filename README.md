@@ -95,8 +95,8 @@ GUARDRAILS
 * **Chat (Send Message):** It extracts the raw text response from Claude's response path (`content[0].text`) and renders it cleanly back to the chat UI, as seen below:
 ---
 
-![Screenshot of user query](images/reply-1.pdf)
-![Screenshot of user query](images/reply-2.pdf)
+![Screenshot of user query](images/reply-1.png)
+![Screenshot of user query](images/reply-2.png)
 ![Screenshot of user query](images/reply-3.png)
 
 This pipeline operates on Retrieval-Augmented Generation (RAG) principles thus grounding model outputs in verifed source documentation.
