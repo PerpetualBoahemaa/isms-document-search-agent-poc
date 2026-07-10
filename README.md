@@ -10,7 +10,7 @@ This project is a Proof of Concept (PoC) for a tool that automates the search fo
 
 ## 2. Demo
 
-▶️ [**Click here to watch the full 93-control scan execution demo**](https://youtu.be/sJhKgj26Nsw)
+▶️ [**Click here to watch the full 93-control scan execution demo**](https://youtu.be/seO02_JWWog)
 
 Note: The video demonstrates a full 93-ISO-control scan. The entire automated sequence finishes in ~75 seconds and is at least an order-of-magnitude reduction in time compared to manual auditing.
 
