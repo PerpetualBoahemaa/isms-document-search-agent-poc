@@ -1,0 +1,283 @@
+{
+  "name": "PoC for ISO 27002 Peruser",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nMy name is Peruser. How can I assist you today?",
+        "options": {
+          "responseMode": "responseNodes"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a84c1a72-37f9-486b-a6cc-5cf048066ee8",
+      "name": "When chat message received",
+      "webhookId": "YOUR_WEBHOOK_ID_1"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "YOUR_ISO_REFERENCE",
+          "mode": "list",
+          "cachedResultName": "ISO_IEC_27001_2022(en)",
+          "cachedResultUrl": "YOUR_ISO_REFERENCE_FILE_URL"
+        },
+        "options": {
+          "binaryPropertyName": "isoData",
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e62bc1cf-e633-417e-965d-ffa8b230f2f0",
+      "name": "Fetch ISO 27001 Reference",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YOUR_GOOGLE_CREDENTIAL_ID",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "'YOUR_GOOGLE_DRIVE_EVIDENCE_FOLDER_ID' in parents",
+        "returnAll": true,
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "3b28f584-2a21-4ce7-96ac-f6af25e2ca69",
+      "name": "Search Evidence Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YOUR_GOOGLE_OAUTH_CLIENT_ID",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        624,
+        0
+      ],
+      "id": "b1ff8717-e8b9-47d3-863b-40aaee502c21",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "o8vvxR9XnFrHHb2E",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_ANTHROPIC_API_Key"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-sonnet-4-5\",\n  \"max_tokens\": 1024,\n  \"system\": \"You are a specialized ISO 27001 Audit Assistant.\\n\\nROLE\\nVerify whether ISO 27001 Annex A security controls are evidenced within the documents provided to you.\\n\\nREFERENCE\\nUse the provided ISO 27001:2022 Annex A as the sole definition of every control. Each control in Annex A has a concise, prescriptive definition stating what shall exist. Match the user's query against that definition only. Never use general training knowledge to interpret any control.\\n\\nEVIDENCE STANDARD\\nA document evidences a control ONLY if the document explicitly states in its title, purpose, scope, or objective section that it is about that control's subject matter. The declaration must be direct and unambiguous.\\n\\nThe test is simple: does the document say, in its own words, that it exists to address this subject? If yes, it counts. If not, it does not — regardless of how many times related concepts appear in the body.\\n\\nWhat counts:\\n- A document titled 'Backup Policy' whose purpose section states it governs backup and restoration procedures evidences the backup control.\\n- A document titled 'Malware Protection Policy' whose scope states it covers anti-malware requirements evidences the malware control.\\n\\nWhat does not count:\\n- A document that mentions a concept in passing, as a method, or as a step within a different procedure.\\n- A document whose title and purpose are about a different subject, even if related concepts appear throughout.\\n- A document that addresses a control's subject matter as a secondary or incidental concern.\\n\\nIf the document does not explicitly declare in its title, purpose, scope, or objective that it covers the control's subject, report: 'No evidence found for [Control Name/Number].'\\n\\nTHREE QUESTION TYPES\\n\\nA) SINGLE CONTROL ('Is there evidence for control X?')\\nRespond using ONLY one of these:\\n- Dedicated file exists: 'Yes, a dedicated file exists: [Filename].'\\n- Control is a section within a file: 'Found in [Filename]: [2-3 sentence summary of the section whose primary subject matches this control].'\\n- No evidence: 'No evidence found for [Control Name/Number].'\\n\\nB) A GROUP, SUBSET, OR LIST OF CONTROLS\\nThis includes any of: a formal category ('physical controls', 'people controls'), a numeric range ('controls 8.1-8.10'), OR a free-form list of control topics/themes named by the user (e.g. 'termination, screening of employees, working from home').\\nFirst, map each topic the user named to its corresponding ISO 27001 Annex A control using the reference document. Then apply the evidence standard above to each. For each named topic that HAS evidence, give one entry:\\n[Control Number] [Control Name] — Found in [Filename]: [1-2 sentence summary].\\nFor any named topic with no evidence, add one line: 'No evidence found for [topic].'\\nCover every topic the user listed. Do not elaborate beyond this.\\n\\nC) ALL CONTROLS ('Is there evidence for all controls?')\\nApply the evidence standard above to every control before reporting it as evidenced. Respond in this exact structure:\\nLine 1: 'Not all controls have evidence.'\\nThen: 'Controls with evidence:'\\nList one line per evidenced control: [Control Number] [Control Name] — Found in [Filename]: [1 sentence summary].\\nThen: 'Examples of controls without evidence:' followed by a short list (8-12) of notable unevidenced controls, formatted: [Control Number] [Control Name].\\nThen a final coverage line: 'Coverage: [X] of 93 controls evidenced; [93 minus X] without evidence.'\\nDo not add compliance commentary, category breakdowns, or closing remarks beyond this structure.\\n\\nGUARDRAILS\\n- Only report what is explicitly found in the provided documents. Never invent or assume.\\n- A document must explicitly declare in its title, purpose, scope, or objective that it covers the control's subject. Incidental mentions do not qualify.\\n- Cite the exact filename for every finding.\\n- No general security advice or recommendations.\\n- If uncertain whether the evidence standard is met, always default to 'No evidence found.'\\n- Separate each control finding with a blank line. Never run findings together in a single paragraph block.\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify(\"Here are the documents to search:\\n\\n\" + $json.combinedDocuments + \"\\n\\n---\\n\\nThe user's question is: \" + $('When chat message received').item.json.chatInput) }}\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "a30e1762-806d-4d63-8ab0-5953c716cf8f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input is now the merged stream: item 0 = ISO reference, items 1-7 = evidence\nconst allItems = $input.all();\n\n// Item 0 is the ISO reference\nconst isoFileName = allItems[0].binary.isoData.fileName;\nconst isoBuffer = await this.helpers.getBinaryDataBuffer(0, 'isoData');\nconst isoText = isoBuffer.toString('utf-8');\n\n// Items 1 onwards are the evidence files\nlet evidenceText = '';\nfor (let i = 1; i < allItems.length; i++) {\n  const fileName = allItems[i].binary.data.fileName;\n  const buffer = await this.helpers.getBinaryDataBuffer(i, 'data');\n  const content = buffer.toString('utf-8');\n  evidenceText += `\\n\\n=== FILENAME: ${fileName} ===\\n${content}`;\n}\n\n// Combine into one structured block\nconst combined = `ISO 27002 REFERENCE DOCUMENT (FILENAME: ${isoFileName}):\\n${isoText}\\n\\n\\n--- COMPANY EVIDENCE DOCUMENTS ---${evidenceText}`;\n\n// Output a single item\nreturn [{ json: { combinedDocuments: combined } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "92d2ddf5-151e-4cdb-b7c4-b71d0b7d87cd",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "message": "={{ $json.content[0].text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1.3,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "b4e5c0bf-df65-45f9-bfbf-a7de6d5b65ba",
+      "name": "Chat",
+      "webhookId": "YOUR_WEBHOOK_ID_2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        640,
+        -272
+      ],
+      "id": "67ae2fe3-5f4e-4f5f-b38b-89cdf53220cb",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Fetch ISO 27001 Reference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch ISO 27001 Reference": {
+      "main": [
+        [
+          {
+            "node": "Search Evidence Folder",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Evidence Folder": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "900df6e9-0e49-45e8-a55a-8b9294937671",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "YOUR_N8N_INSTANCE_ID"
+  },
+  "id": "YOUR_WORKFLOW_ID",
+  "tags": []
+}
